@@ -1,0 +1,16 @@
+.env
+.venv/
+.vscode/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+# Archivos producidos por el agente (salvo los .gitkeep)
+data/recepcion/*
+!data/recepcion/.gitkeep
+data/clasificados/*
+!data/clasificados/.gitkeep
