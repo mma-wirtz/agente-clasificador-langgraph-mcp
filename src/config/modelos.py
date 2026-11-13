@@ -12,6 +12,7 @@ def crear_llm(proveedor: str, nombre_modelo: str):
     """Devuelve una instancia de chat compatible con LangChain/LangGraph."""
     proveedor = proveedor.strip().lower()
     nombre_modelo = nombre_modelo.strip()
+
     if not nombre_modelo:
         raise ValueError("Debes indicar el nombre del modelo.")
 
@@ -21,9 +22,16 @@ def crear_llm(proveedor: str, nombre_modelo: str):
             base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
             temperature=0,
         )
+
     if proveedor == "gemini":
         if not os.getenv("GOOGLE_API_KEY"):
             raise ValueError("Falta GOOGLE_API_KEY en el archivo .env.")
-        return ChatGoogleGenerativeAI(model=nombre_modelo, temperature=0)
 
-    raise ValueError(f"Proveedor no compatible: {proveedor}. Usa ollama o gemini.")
+        return ChatGoogleGenerativeAI(
+            model=nombre_modelo,
+            thinking_level="low",
+        )
+
+    raise ValueError(
+        f"Proveedor no compatible: {proveedor}. Usa ollama o gemini."
+    )

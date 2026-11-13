@@ -52,7 +52,7 @@ def main() -> None:
             print(f"Error al consultar el modelo: {exc}")
             continue
         mensajes.extend((mensaje, respuesta))
-        print(f"Agente> {respuesta.content}\n")
+        print(f"Agente> {respuesta.text}\n")
 
 
 if __name__ == "__main__":
