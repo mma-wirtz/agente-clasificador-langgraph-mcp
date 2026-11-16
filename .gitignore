@@ -14,3 +14,5 @@ data/recepcion/*
 !data/recepcion/.gitkeep
 data/clasificados/*
 !data/clasificados/.gitkeep
+# Papelera del gestor de documentos
+data/papelera/
