@@ -3,6 +3,7 @@
 
 from pathlib import Path
 from mcp.server.fastmcp import FastMCP
+from typing import Literal
 import shutil
 
 
@@ -180,7 +181,16 @@ def listar_archivos_recepcion() -> list[str]:
 
 
 @mcp.tool()
-def mover_archivo(nombre_archivo: str, categoria: str) -> str:
+def mover_archivo(
+    nombre_archivo: str,
+    categoria: Literal[
+        "tecnologia",
+        "salud",
+        "economia",
+        "educacion",
+        "otros"
+    ]
+) -> str:
     """
     Mueve un archivo de recepción a una categoría existente
     o crea la carpeta de la categoría si no existe.

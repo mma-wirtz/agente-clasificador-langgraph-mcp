@@ -1,9 +1,19 @@
-# Base para el proyecto LangGraph + MCP. Preferimos SDK MCP v1 por compatibilidad con ejemplos de clase.
+
+# Dependencias del proyecto LangGraph + MCP
+
+# Modelos de IA y gestión de agentes
 langchain>=1,<2
 langgraph>=1,<2
 langchain-ollama
 langchain-google-genai
-langchain-mcp-adapters
+
+# Protocolo MCP y conexión con LangGraph
 mcp>=1.28,<2
+langchain-mcp-adapters
+
+# Variables de entorno y configuración
 python-dotenv
+
+# Memoria persistente con SQLite
 langgraph-checkpoint-sqlite
+aiosqlite
