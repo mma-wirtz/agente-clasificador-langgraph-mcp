@@ -12,6 +12,7 @@ from mcp.client.stdio import stdio_client
 RAIZ_PROYECTO = Path(__file__).resolve().parents[1]
 
 
+
 async def probar_conexion():
 
     # Indicamos cómo arrancar nuestro servidor.
@@ -40,7 +41,7 @@ async def probar_conexion():
             for herramienta in resultado.tools:
                 print(f"- {herramienta.name}")
 
-            # Ejecutamos una herramienta mediante MCP.
+            # PRUEBA 1: Listar archivos de recepción.
             respuesta = await sesion.call_tool(
                 "listar_archivos_recepcion",
                 arguments={},
@@ -51,6 +52,31 @@ async def probar_conexion():
             for bloque in respuesta.content:
                 if bloque.type == "text":
                     print(bloque.text)
+
+            # PRUEBA 2: Buscar un archivo mediante MCP.
+            print("\nBuscando nota_salud.txt mediante MCP:")
+
+            respuesta_busqueda = await sesion.call_tool(
+                "buscar_archivo",
+                arguments={"nombre_archivo": "nota_salud.txt"},
+            )
+
+            for bloque in respuesta_busqueda.content:
+                if bloque.type == "text":
+                    print(bloque.text)
+
+            # PRUEBA 3: Consultar los archivos de la papelera.
+            print("\nContenido de la papelera:")
+
+            respuesta_papelera = await sesion.call_tool(
+                "listar_papelera",
+                arguments={},
+            )
+
+            for bloque in respuesta_papelera.content:
+                if bloque.type == "text":
+                    print(bloque.text)
+
 
 
 if __name__ == "__main__":

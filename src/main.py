@@ -8,6 +8,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from langgraph.types import Command
 
 from src.grafo.grafo import crear_grafo
 
@@ -43,6 +44,50 @@ def elegir_modelo() -> tuple[str, str]:
             return opciones[eleccion]
 
         print("Opción no válida.")
+
+
+async def resolver_confirmaciones(grafo, config, resultado):
+    """Solicita autorización para continuar un grafo interrumpido."""
+
+    # Repetimos si el grafo necesita alguna confirmación.
+    while resultado.get("__interrupt__"):
+
+        interrupciones = resultado["__interrupt__"]
+
+        for interrupcion in interrupciones:
+            datos = interrupcion.value
+
+            print("\n=== CONFIRMACIÓN NECESARIA ===")
+            print("El agente quiere ejecutar:")
+
+            # Mostramos todas las operaciones pendientes.
+            for operacion in datos["operaciones"]:
+                print(f"\nHerramienta: {operacion['herramienta']}")
+                print(f"Parámetros: {operacion['argumentos']}")
+
+        # Pedimos una respuesta válida.
+        while True:
+            decision = input(
+                "\n¿Autorizas estas operaciones? (s/N): "
+            ).strip().lower()
+
+            if decision in {"s", "si", "sí"}:
+                aprobado = True
+                break
+
+            if decision in {"", "n", "no"}:
+                aprobado = False
+                break
+
+            print("Responde 's' para confirmar o 'n' para cancelar.")
+
+        # Reanudamos el grafo con la decisión del usuario.
+        resultado = await grafo.ainvoke(
+            Command(resume=aprobado),
+            config=config,
+        )
+
+    return resultado
 
 
 async def main():
@@ -81,6 +126,20 @@ async def main():
         print(f"Mensajes recuperados: {len(mensajes_guardados)}")
         print("Escribe 'salir' para terminar.\n")
 
+        # Comprobamos si quedó una operación pendiente
+        # de confirmar en una ejecución anterior.
+        if estado.interrupts:
+            print("\nHay una operación pendiente de confirmación.")
+
+            resultado_pendiente = await resolver_confirmaciones(
+                grafo,
+                config,
+                {"__interrupt__": estado.interrupts},
+            )
+
+            respuesta_pendiente = resultado_pendiente["messages"][-1]
+            print(f"\nAgente> {respuesta_pendiente.text}\n")
+
         while True:
             texto = input("Tú> ").strip()
 
@@ -103,6 +162,13 @@ async def main():
                     config=config,
                 )
 
+                # Si el grafo se ha pausado, pedimos confirmación.
+                resultado = await resolver_confirmaciones(
+                    grafo,
+                    config,
+                    resultado,
+                )
+
                 # Mostramos las herramientas utilizadas en esta petición.
                 mensajes_nuevos = resultado["messages"][
                     cantidad_anterior + 1:
@@ -111,7 +177,7 @@ async def main():
                 for mensaje in mensajes_nuevos:
                     if isinstance(mensaje, AIMessage):
                         for llamada in mensaje.tool_calls:
-                            print(f"[MCP] {llamada['name']}")
+                            print(f"[MCP solicitado] {llamada['name']}")
                             print(f"      Parámetros: {llamada['args']}")
 
                 # Mostramos la respuesta final.
