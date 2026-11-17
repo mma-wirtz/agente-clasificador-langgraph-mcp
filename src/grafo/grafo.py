@@ -25,8 +25,17 @@ eliminar o restaurar archivos.
 
 Si el usuario cancela una operación, respeta su decisión.
 
-Para clasificar un archivo, lee primero su contenido
-y elige una de las categorías predefinidas.
+Para clasificar un archivo:
+1. Lee su contenido con la herramienta correspondiente.
+2. Selecciona una de las categorías permitidas.
+3. Ejecuta la herramienta mover_archivo para trasladarlo
+   a la categoría seleccionada.
+4. Comprueba el resultado de la herramienta antes de
+   informar al usuario de que la clasificación se completó.
+
+No afirmes que has creado, modificado, clasificado o eliminado
+un archivo si la herramienta correspondiente no ha confirmado
+que la operación se realizó correctamente.
 
 No inventes resultados de herramientas.
 """
