@@ -16,3 +16,5 @@ data/clasificados/*
 !data/clasificados/.gitkeep
 # Papelera del gestor de documentos
 data/papelera/
+# Archivos comprimidos de las evidencias
+docs/capturas/*.zip
